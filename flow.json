@@ -1,1 +1,1761 @@
-[]
+[
+    {
+        "id": "369ed2b7a1b91c6a",
+        "type": "tab",
+        "label": "GB and caches",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "94d82b50a4841ada",
+        "type": "subflow",
+        "name": "Monitor",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 100,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "626a63a58dfc0c36"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "4e0958965f2b8fc8",
+        "type": "prometheus-metric-config",
+        "name": "wmo_wis2_gb_gc_cache_delay",
+        "help": "Delay to get the data in the cache",
+        "labels": "globalcache",
+        "mtype": "gauge"
+    },
+    {
+        "id": "40dc434c6cfaed9b",
+        "type": "prometheus-metric-config",
+        "name": "wmo_wis2_gb_gc_messages_cached",
+        "help": "Message cached",
+        "labels": "source,cached,centre_id",
+        "mtype": "counter"
+    },
+    {
+        "id": "8c4d36462aa433fc",
+        "type": "mqtt-broker",
+        "name": "GB",
+        "broker": "mqtts://globalbroker.meteo.fr:8883",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "true",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "da38939ded0e1ee2",
+        "type": "prometheus-metric-config",
+        "name": "wmo_wis2_gb_gc_messages_not_cached",
+        "help": "Not in cache",
+        "labels": "source,cached,centre_id",
+        "mtype": "counter"
+    },
+    {
+        "id": "566a7ac5d348970b",
+        "type": "prometheus-metric-config",
+        "name": "wmo_wis2_gb_messages_by_origin",
+        "help": "Messages from origin",
+        "labels": "source,cached,centre_id",
+        "mtype": "counter"
+    },
+    {
+        "id": "8cf5f6b5.937088",
+        "type": "mqtt-broker",
+        "name": "Subscriber - DWD",
+        "broker": "mqtts://wis2.dwd.de:8883",
+        "port": "",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "2a298aa9e8350075",
+        "type": "mqtt-broker",
+        "name": "Subscriber - JMA",
+        "broker": "mqtts://wisdev.kishou.go.jp",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ca84317db895143e",
+        "type": "redis-config",
+        "name": "Redis",
+        "options": "redis-monitor:6379",
+        "cluster": false,
+        "optionsType": "str"
+    },
+    {
+        "id": "ba4d10a3dddf288c",
+        "type": "switch",
+        "z": "94d82b50a4841ada",
+        "name": "Delay to cache",
+        "property": "($millis() - $number(msg.payload)) / 1000",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "lte",
+                "v": "$parent.delay1",
+                "vt": "flow"
+            },
+            {
+                "t": "lte",
+                "v": "$parent.delay2",
+                "vt": "flow"
+            },
+            {
+                "t": "lte",
+                "v": "$parent.delay3",
+                "vt": "flow"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 4,
+        "x": 780,
+        "y": 320,
+        "wires": [
+            [
+                "f15bfa37e5375648"
+            ],
+            [
+                "83b98e5dfd757a4a"
+            ],
+            [
+                "ace7b68fee023c4c"
+            ],
+            [
+                "698553be6469fde8"
+            ]
+        ]
+    },
+    {
+        "id": "f15bfa37e5375648",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Prometheus - 1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"inc\",\t   \"labels\":{\t      \"source\": $flowContext(\"cache\"),\t      \"cached\": $flowContext(\"$parent.delay1\"),\t      \"centre_id\": $split(topic,\"/\")[2]\t   },\t   \"val\":1 \t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 260,
+        "wires": [
+            [
+                "dac0f81bfedef4d5"
+            ]
+        ]
+    },
+    {
+        "id": "5f1d2a8495152a19",
+        "type": "redis-command",
+        "z": "94d82b50a4841ada",
+        "server": "ca84317db895143e",
+        "command": "DEL",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 880,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5b41d16333e4f7f0",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Get",
+        "rules": [
+            {
+                "t": "set",
+                "p": "cache",
+                "pt": "flow",
+                "to": "cache",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "$flowContext(\"cache\") & \":\" & payload.properties.data_id",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "[]",
+                "tot": "json",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 330,
+        "y": 220,
+        "wires": [
+            [
+                "7b11a3e8b19294b6"
+            ]
+        ]
+    },
+    {
+        "id": "7b11a3e8b19294b6",
+        "type": "redis-command",
+        "z": "94d82b50a4841ada",
+        "server": "ca84317db895143e",
+        "command": "GET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 460,
+        "y": 220,
+        "wires": [
+            [
+                "821c4a81dfb4b55f"
+            ]
+        ]
+    },
+    {
+        "id": "4e0628d10e8ffa3a",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Del",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "topic",
+                "tot": "msg",
+                "dc": true
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 750,
+        "y": 220,
+        "wires": [
+            [
+                "5f1d2a8495152a19"
+            ]
+        ]
+    },
+    {
+        "id": "8008e074715d5ab1",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Prometheus",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"set\",\t   \"labels\":{\t      \"globalcache\": $flowContext(\"cache\")\t   },\t   \"val\": ( ($millis() - $number(msg.payload)) / 1000 )\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 770,
+        "y": 180,
+        "wires": [
+            [
+                "965a82f9c846076f"
+            ]
+        ]
+    },
+    {
+        "id": "965a82f9c846076f",
+        "type": "prometheus-exporter",
+        "z": "94d82b50a4841ada",
+        "name": "Delay",
+        "metric": "4e0958965f2b8fc8",
+        "x": 910,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "821c4a81dfb4b55f",
+        "type": "switch",
+        "z": "94d82b50a4841ada",
+        "name": "Expired ?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 600,
+        "y": 220,
+        "wires": [
+            [
+                "4e0628d10e8ffa3a",
+                "8008e074715d5ab1",
+                "ba4d10a3dddf288c"
+            ]
+        ]
+    },
+    {
+        "id": "dac0f81bfedef4d5",
+        "type": "prometheus-exporter",
+        "z": "94d82b50a4841ada",
+        "name": "Cached",
+        "metric": "40dc434c6cfaed9b",
+        "x": 1160,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "83b98e5dfd757a4a",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Prometheus - 2",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"inc\",\t   \"labels\":{\t      \"source\": $flowContext(\"cache\"),\t      \"cached\": $flowContext(\"$parent.delay2\"),\t      \"centre_id\": $split(topic,\"/\")[2]\t   },\t   \"val\":1 \t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 300,
+        "wires": [
+            [
+                "dac0f81bfedef4d5"
+            ]
+        ]
+    },
+    {
+        "id": "ace7b68fee023c4c",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Prometheus - 3",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"inc\",\t   \"labels\":{\t      \"source\": $flowContext(\"cache\"),\t      \"cached\": $flowContext(\"$parent.delay3\"),\t      \"centre_id\": $split(topic,\"/\")[2]\t   },\t   \"val\":1 \t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 340,
+        "wires": [
+            [
+                "dac0f81bfedef4d5"
+            ]
+        ]
+    },
+    {
+        "id": "698553be6469fde8",
+        "type": "change",
+        "z": "94d82b50a4841ada",
+        "name": "Prometheus - 4",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"inc\",\t   \"labels\":{\t      \"source\": $flowContext(\"cache\"),\t      \"cached\": \"yes\",\t      \"centre_id\": $split(topic,\"/\")[2]\t   },\t   \"val\":1 \t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 380,
+        "wires": [
+            [
+                "dac0f81bfedef4d5"
+            ]
+        ]
+    },
+    {
+        "id": "626a63a58dfc0c36",
+        "type": "delay",
+        "z": "94d82b50a4841ada",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 200,
+        "y": 220,
+        "wires": [
+            [
+                "5b41d16333e4f7f0"
+            ]
+        ]
+    },
+    {
+        "id": "c36d09a51882792b",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Get Notifications",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[\"set\",\"notify-keyspace-events\",\"KEx\"]",
+        "payloadType": "json",
+        "x": 370,
+        "y": 120,
+        "wires": [
+            [
+                "7db3095835943be8"
+            ]
+        ]
+    },
+    {
+        "id": "7db3095835943be8",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "CONFIG",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 560,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "14c5b29d8e8e46ee",
+        "type": "redis-instance",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "name": "",
+        "topic": "redis",
+        "location": "global",
+        "x": 330,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "34bb3f297d5a5d06",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "d": true,
+        "name": "Subscribe",
+        "props": [
+            {
+                "p": "action",
+                "v": "subscribe",
+                "vt": "str"
+            },
+            {
+                "p": "topic",
+                "v": "\"origin/a/wis2/\" & $flowContext(\"topic\")",
+                "vt": "jsonata"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 350,
+        "y": 400,
+        "wires": [
+            [
+                "3562695fbe6d3edb"
+            ]
+        ]
+    },
+    {
+        "id": "3562695fbe6d3edb",
+        "type": "mqtt in",
+        "z": "369ed2b7a1b91c6a",
+        "name": "GB",
+        "topic": "",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8c4d36462aa433fc",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 490,
+        "y": 400,
+        "wires": [
+            [
+                "13c31010f0fa16a4"
+            ]
+        ]
+    },
+    {
+        "id": "2cffea3a4b970319",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Prepare",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dwd",
+                "pt": "msg",
+                "to": "[\t   \"dwd:\" & payload.properties.data_id,\t   $millis(),\t   \"EX\",\t   $flowContext(\"timeout_cache\") \t]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "jma",
+                "pt": "msg",
+                "to": "[\t   \"jma:\" & payload.properties.data_id,\t   $millis(),\t   \"EX\",\t   $flowContext(\"timeout_cache\")\t]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "orig",
+                "pt": "msg",
+                "to": "[\t   \"orig:\" & payload.properties.data_id,\t   $string(payload),\t   \"EX\",\t   $flowContext(\"timeout_orig\")\t]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "payload.properties.data_id",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 980,
+        "y": 400,
+        "wires": [
+            [
+                "ac2f3665ce2c432a"
+            ]
+        ]
+    },
+    {
+        "id": "ac2f3665ce2c432a",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "GET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 800,
+        "y": 500,
+        "wires": [
+            [
+                "5e76af9f14abd8ac"
+            ]
+        ]
+    },
+    {
+        "id": "5e76af9f14abd8ac",
+        "type": "switch",
+        "z": "369ed2b7a1b91c6a",
+        "name": "New ?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 930,
+        "y": 500,
+        "wires": [
+            [
+                "6b4bab9e76d27ad4",
+                "b17c6e5b0e2c5ad5"
+            ]
+        ]
+    },
+    {
+        "id": "6b4bab9e76d27ad4",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Del",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "topic",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1050,
+        "y": 500,
+        "wires": [
+            [
+                "b228c0f17ec7cd27",
+                "1a14618e5e3ea8e3",
+                "f87ccd58ae748e1e"
+            ]
+        ]
+    },
+    {
+        "id": "b228c0f17ec7cd27",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Orig",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "orig",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1210,
+        "y": 500,
+        "wires": [
+            [
+                "fd387c6080fd43d4"
+            ]
+        ]
+    },
+    {
+        "id": "fd387c6080fd43d4",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "SET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 1340,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1a14618e5e3ea8e3",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "DWD",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "dwd",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1210,
+        "y": 540,
+        "wires": [
+            [
+                "f22598464872e22e"
+            ]
+        ]
+    },
+    {
+        "id": "f22598464872e22e",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "SET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 1340,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f87ccd58ae748e1e",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "JMA",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "jma",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1210,
+        "y": 580,
+        "wires": [
+            [
+                "5fc95dfc26f25b49"
+            ]
+        ]
+    },
+    {
+        "id": "5fc95dfc26f25b49",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "SET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 1340,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d1f72b9058e9778d",
+        "type": "switch",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Expired",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "expired",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 500,
+        "y": 300,
+        "wires": [
+            [
+                "143fdd58056cb73c"
+            ]
+        ]
+    },
+    {
+        "id": "2c7af62ab8436dca",
+        "type": "switch",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Cache",
+        "property": "$not(\t   $type(payload.properties.cache) = \"boolean\"\t) or (\t   $type(payload.properties.cache) = \"boolean\" and payload.properties.cache = true \t)",
+        "propertyType": "jsonata",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 850,
+        "y": 400,
+        "wires": [
+            [
+                "2cffea3a4b970319"
+            ]
+        ]
+    },
+    {
+        "id": "91a1d3b0fa549f9b",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Key - JMA",
+        "rules": [
+            {
+                "t": "set",
+                "p": "cache",
+                "pt": "msg",
+                "to": "jma",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "\"orig:\" & $substringAfter(topic, \"__keyspace@0__:jma:\")",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "[]",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 790,
+        "y": 300,
+        "wires": [
+            [
+                "9c9366116b24124d",
+                "b31434e5065c3568"
+            ]
+        ]
+    },
+    {
+        "id": "143fdd58056cb73c",
+        "type": "switch",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Which ?",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "dwd:.*",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "jma:.*",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "0714ac7d709f069a"
+            ],
+            [
+                "91a1d3b0fa549f9b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0714ac7d709f069a",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Key - DWD",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "\"orig:\" & $substringAfter(topic, \"__keyspace@0__:dwd:\")",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "[]",
+                "tot": "json"
+            },
+            {
+                "t": "set",
+                "p": "cache",
+                "pt": "msg",
+                "to": "dwd",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 790,
+        "y": 260,
+        "wires": [
+            [
+                "c1ddd2092fba8534",
+                "b31434e5065c3568"
+            ]
+        ]
+    },
+    {
+        "id": "9c9366116b24124d",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "GET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 950,
+        "y": 320,
+        "wires": [
+            [
+                "8bc9a2183ea53e53"
+            ]
+        ]
+    },
+    {
+        "id": "c1ddd2092fba8534",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "GET",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 950,
+        "y": 240,
+        "wires": [
+            [
+                "368f8e2b9bbf8bb4"
+            ]
+        ]
+    },
+    {
+        "id": "071423de4c29b3c5",
+        "type": "prometheus-exporter",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Not cached",
+        "metric": "da38939ded0e1ee2",
+        "x": 1140,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "b31434e5065c3568",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Prometheus",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"inc\",\t   \"labels\":{\t      \"source\": msg.cache,\t      \"cached\": \"no\",\t      \"centre_id\": $split(msg.topic,\"/\")[2]\t    },\t   \"val\":1 \t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 960,
+        "y": 280,
+        "wires": [
+            [
+                "071423de4c29b3c5"
+            ]
+        ]
+    },
+    {
+        "id": "3c27f31f1810a8ff",
+        "type": "prometheus-exporter",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Origin",
+        "metric": "566a7ac5d348970b",
+        "x": 1210,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "b17c6e5b0e2c5ad5",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Prometheus",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\t   \"op\":\"inc\",\t   \"labels\":{\t       \"source\": \"origin\",\t       \"cached\": \"source\",\t       \"centre_id\": $split(topic,\"/\")[2]\t   \t   },\t   \"val\":1 \t\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1070,
+        "y": 460,
+        "wires": [
+            [
+                "3c27f31f1810a8ff"
+            ]
+        ]
+    },
+    {
+        "id": "13c31010f0fa16a4",
+        "type": "rbe",
+        "z": "369ed2b7a1b91c6a",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 610,
+        "y": 400,
+        "wires": [
+            [
+                "b1ba86cb63b1f72a"
+            ]
+        ]
+    },
+    {
+        "id": "4de2b878a1f0d9ab",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Init variables",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 350,
+        "y": 200,
+        "wires": [
+            [
+                "9eaa5e1bccdafe0e"
+            ]
+        ]
+    },
+    {
+        "id": "9eaa5e1bccdafe0e",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Delays",
+        "rules": [
+            {
+                "t": "set",
+                "p": "delay1",
+                "pt": "flow",
+                "to": "120",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "delay2",
+                "pt": "flow",
+                "to": "300",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "delay3",
+                "pt": "flow",
+                "to": "600",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "flow",
+                "to": "#",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "timeout_orig",
+                "pt": "flow",
+                "to": "3600",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "timeout_cache",
+                "pt": "flow",
+                "to": "1800",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5396c93a4e91bbc9",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "d": true,
+        "name": "Subscription",
+        "props": [
+            {
+                "p": "action",
+                "v": "subscribe",
+                "vt": "str"
+            },
+            {
+                "p": "topic",
+                "v": "\"cache/a/wis2/\" & $flowContext(\"topic\")",
+                "vt": "jsonata"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 350,
+        "y": 600,
+        "wires": [
+            [
+                "dac9803498bc624c"
+            ]
+        ]
+    },
+    {
+        "id": "3dc3ad9b5c4c64bb",
+        "type": "comment",
+        "z": "369ed2b7a1b91c6a",
+        "name": "DWD Cache",
+        "info": "",
+        "x": 350,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "dac9803498bc624c",
+        "type": "mqtt in",
+        "z": "369ed2b7a1b91c6a",
+        "name": "DWD",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "8cf5f6b5.937088",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 490,
+        "y": 600,
+        "wires": [
+            [
+                "f0cd96ab81e29fa5"
+            ]
+        ]
+    },
+    {
+        "id": "16105e68fc8e4691",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Cache",
+        "rules": [
+            {
+                "t": "set",
+                "p": "cache",
+                "pt": "msg",
+                "to": "dwd",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 730,
+        "y": 600,
+        "wires": [
+            [
+                "d3fe89ee08f501f3"
+            ]
+        ]
+    },
+    {
+        "id": "d3fe89ee08f501f3",
+        "type": "subflow:94d82b50a4841ada",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Monitor",
+        "x": 860,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "a02d83d1c04d3e3a",
+        "type": "mqtt in",
+        "z": "369ed2b7a1b91c6a",
+        "name": "JMA",
+        "topic": "",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "2a298aa9e8350075",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 1,
+        "x": 490,
+        "y": 740,
+        "wires": [
+            [
+                "abd9e652b82edf3b"
+            ]
+        ]
+    },
+    {
+        "id": "b005f3b6309aba70",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Cache",
+        "rules": [
+            {
+                "t": "set",
+                "p": "cache",
+                "pt": "msg",
+                "to": "jma",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 730,
+        "y": 740,
+        "wires": [
+            [
+                "10b76b8d9e31fafb"
+            ]
+        ]
+    },
+    {
+        "id": "10b76b8d9e31fafb",
+        "type": "subflow:94d82b50a4841ada",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Monitor",
+        "x": 860,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "9c3d0c6ddf03dbfb",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "d": true,
+        "name": "Subscription",
+        "props": [
+            {
+                "p": "action",
+                "v": "subscribe",
+                "vt": "str"
+            },
+            {
+                "p": "topic",
+                "v": "\"cache/a/wis2/\" & $flowContext(\"topic\")",
+                "vt": "jsonata"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 350,
+        "y": 740,
+        "wires": [
+            [
+                "a02d83d1c04d3e3a"
+            ]
+        ]
+    },
+    {
+        "id": "6c5ba156431d6fd6",
+        "type": "comment",
+        "z": "369ed2b7a1b91c6a",
+        "name": "JMA Cache",
+        "info": "",
+        "x": 350,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "b1ba86cb63b1f72a",
+        "type": "msg-speed",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Speed",
+        "frequency": "sec",
+        "interval": "10",
+        "estimation": false,
+        "ignore": false,
+        "pauseAtStartup": false,
+        "topicDependent": false,
+        "x": 730,
+        "y": 400,
+        "wires": [
+            [],
+            [
+                "2c7af62ab8436dca"
+            ]
+        ]
+    },
+    {
+        "id": "f0cd96ab81e29fa5",
+        "type": "msg-speed",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Speed",
+        "frequency": "sec",
+        "interval": "10",
+        "estimation": false,
+        "ignore": false,
+        "pauseAtStartup": false,
+        "topicDependent": false,
+        "x": 610,
+        "y": 600,
+        "wires": [
+            [],
+            [
+                "16105e68fc8e4691"
+            ]
+        ]
+    },
+    {
+        "id": "abd9e652b82edf3b",
+        "type": "msg-speed",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Speed",
+        "frequency": "sec",
+        "interval": "10",
+        "estimation": false,
+        "ignore": false,
+        "pauseAtStartup": false,
+        "topicDependent": false,
+        "x": 610,
+        "y": 740,
+        "wires": [
+            [],
+            [
+                "b005f3b6309aba70"
+            ]
+        ]
+    },
+    {
+        "id": "368f8e2b9bbf8bb4",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Save",
+        "rules": [
+            {
+                "t": "set",
+                "p": "message",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1090,
+        "y": 240,
+        "wires": [
+            [
+                "cb3839d1a2b86096"
+            ]
+        ]
+    },
+    {
+        "id": "0f7a4bbeda3fef6e",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Message",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \t    \"id\": msg.uuid,\t    \"alert\": \"Data not in cache\",\t    \"original\": $eval(msg.message)\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 240,
+        "wires": [
+            [
+                "7e57f081cd6806a1",
+                "4bc514058766ccc0"
+            ]
+        ]
+    },
+    {
+        "id": "7e57f081cd6806a1",
+        "type": "mqtt out",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Alert",
+        "topic": "monitoring/a/wis2/fra/meteo-france/report/globalservices/cache/dwd",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8c4d36462aa433fc",
+        "x": 1470,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4bc514058766ccc0",
+        "type": "debug",
+        "z": "369ed2b7a1b91c6a",
+        "name": "debug 54",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "8bc9a2183ea53e53",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Save",
+        "rules": [
+            {
+                "t": "set",
+                "p": "message",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1090,
+        "y": 320,
+        "wires": [
+            [
+                "c6bae45490408fcd"
+            ]
+        ]
+    },
+    {
+        "id": "7f9f7584404158a6",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Message",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{ \t    \"id\": msg.uuid,\t    \"alert\": \"Data not in cache\",\t    \"original\": $eval(msg.message)\t}",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 320,
+        "wires": [
+            [
+                "4120f22a7546842b",
+                "dd2839f6c85066a1"
+            ]
+        ]
+    },
+    {
+        "id": "4120f22a7546842b",
+        "type": "mqtt out",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Alert",
+        "topic": "monitoring/a/wis2/fra/meteo-france/report/globalservices/cache/jma",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8c4d36462aa433fc",
+        "x": 1470,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "dd2839f6c85066a1",
+        "type": "debug",
+        "z": "369ed2b7a1b91c6a",
+        "name": "debug 55",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "cb3839d1a2b86096",
+        "type": "uuid",
+        "z": "369ed2b7a1b91c6a",
+        "uuidVersion": "v1",
+        "namespaceType": "dns",
+        "namespace": "",
+        "namespaceCustom": "",
+        "name": "uuid",
+        "field": "uuid",
+        "fieldType": "msg",
+        "x": 1210,
+        "y": 240,
+        "wires": [
+            [
+                "0f7a4bbeda3fef6e"
+            ]
+        ]
+    },
+    {
+        "id": "c6bae45490408fcd",
+        "type": "uuid",
+        "z": "369ed2b7a1b91c6a",
+        "uuidVersion": "v1",
+        "namespaceType": "dns",
+        "namespace": "",
+        "namespaceCustom": "",
+        "name": "uuid",
+        "field": "uuid",
+        "fieldType": "msg",
+        "x": 1210,
+        "y": 320,
+        "wires": [
+            [
+                "7f9f7584404158a6"
+            ]
+        ]
+    },
+    {
+        "id": "4e3ab537659a43b9",
+        "type": "redis-in",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "psubscribe",
+        "name": "",
+        "topic": "__key*__:*",
+        "obj": true,
+        "timeout": 0,
+        "x": 350,
+        "y": 300,
+        "wires": [
+            [
+                "d1f72b9058e9778d"
+            ]
+        ]
+    }
+]

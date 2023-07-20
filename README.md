@@ -1,5 +1,5 @@
-WIS2-GlobalCacheMonitoring
-==========================
+WIS2SensorCenter-GlobalCache
+============================
 
 ### About
 

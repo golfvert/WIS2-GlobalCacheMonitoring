@@ -1,8 +1,13 @@
 {
-    "name": "WIS2-GlobalCacheMonitoring",
+    "name": "WIS2SensorCenter-GlobalCache",
     "description": "A Node-RED Project",
     "version": "0.0.1",
-    "dependencies": {},
+    "dependencies": {
+        "node-red-contrib-msg-speed": "2.1.0",
+        "node-red-contrib-prometheus-exporter": "1.0.5",
+        "node-red-contrib-redis": "1.3.9",
+        "node-red-contrib-uuid": "0.0.4"
+    },
     "node-red": {
         "settings": {
             "flowFile": "flow.json",
