@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  node-red-monitor:
+    container_name: node-red-monitor
+    image: nodered/node-red:3.0.2
+    environment:
+      - TZ=Europe/Paris
+      - NODE_RED_ENABLE_PROJECTS=true
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "1800:1880"
+    networks:
+      - sensor
+    depends_on:
+      - redis-monitor
+    volumes:
+      - $home/WIS2SensorCenter/data:/data
+      - $home/WIS2SensorCenter/conf:/conf
+  redis-monitor:
+    container_name: redis-monitor
+    image: redis:latest
+    command: redis-server --save 20 1
+    ports:
+      - "6379:6379"
+    networks:
+      - sensor
+    environment:
+      - REDIS_URL=redis:6379
+    volumes:
+      - $home/WIS2SensorCenter/redis:/data
+networks:
+  sensor:
+    driver: bridge
