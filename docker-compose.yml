@@ -6,8 +6,24 @@ services:
     image: nodered/node-red:3.0.2
     environment:
       - TZ=Europe/Paris
-      - NODE_RED_ENABLE_PROJECTS=true
       - REDIS_URL=redis://redis:6379
+      - MQTT_TOPIC=# # Topic to subscribe to with origin/a/wis2/ or cache/a/wis2/ ahead of the MQTT_TOPIC
+      - MQTT_GB_BROKER=GlobalBroker_URL   # Global Broker URL URL broker such as mqtts://broker.example.com:8883 or wss://broker.example.com:443
+      - MQTT_GB_USERNAME=
+      - MQTT_GB_PASSWORD=
+      - MQTT_GB_REPUBLISH=true # or false or absent - if true will republish the timed out original message on:
+      - MQTT_GB_REPUBLISH_TOPIC=Something # this topic / the name of the cache
+      - MQTT_DWD_BROKER=DWD_Broker_URL   # DWD Cache URL such as mqtts://broker.cache.com:8883 or wss://broker.cache.com:443
+      - MQTT_DWD_USERNAME=
+      - MQTT_DWD_PASSWORD=
+      - MQTT_JMA_BROKER=JMA_Broker_URL   # JMA Cache URL
+      - MQTT_JMA_USERNAME=
+      - MQTT_JMA_PASSWORD=
+      - DELAY1= # First threshold in second eg 120 second
+      - DELAY2=
+      - DELAY3=
+      - DELAY4=
+      - DELAY_ORIG=
     ports:
       - "1800:1880"
     networks:
@@ -15,8 +31,8 @@ services:
     depends_on:
       - redis-monitor
     volumes:
-      - $home/WIS2SensorCenter/data:/data
-      - $home/WIS2SensorCenter/conf:/conf
+      - $HOME/WIS2GlobalCacheMonitoring/data:/data
+      - $HOME/WIS2GlobalCacheMonitoring/conf:/conf
   redis-monitor:
     container_name: redis-monitor
     image: redis:latest
@@ -28,7 +44,7 @@ services:
     environment:
       - REDIS_URL=redis:6379
     volumes:
-      - $home/WIS2SensorCenter/redis:/data
+      - $HOME/WIS2GlobalCacheMonitoring/redis:/data
 networks:
   sensor:
     driver: bridge
