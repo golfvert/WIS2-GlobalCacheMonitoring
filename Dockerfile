@@ -6,7 +6,7 @@ ARG OS=alpine3.12
 FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
 
 # Copy scripts
-#COPY scripts/*.sh /tmp/
+COPY scripts/*.sh /tmp/
 
 # Install tools, create Node-RED app and data dir, add user and set rights
 RUN set -ex && \
@@ -37,7 +37,7 @@ RUN ./known_hosts.sh /etc/ssh/ssh_known_hosts && rm /usr/src/node-red/known_host
 
 # package.json contains Node-RED NPM module and node dependencies
 COPY package.json .
-COPY flow.json /data
+COPY flows.json /data
 COPY settings.js /data
 
 #### Stage BUILD #######################################################################################################
