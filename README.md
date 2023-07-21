@@ -11,7 +11,7 @@ The containers are:
 1. A specialised Node-Red container for all the processing part (the flows.json available here is the source code included in the container)
 2. Redis to store in memory (and saved on disk) key/value pairs 
 
-All the required sources are available in flow.json and al.
+The Dockerfile, the docker-wis2sensorcenterglobalcache.sh and other files - All the required sources are available in flow.json and al. - can be used to modify the Node-Red container. Knowledge on Node-Red and how to manage Node-Red projects is required. Documentation on this is out of scope see https://nodered.org/docs/user-guide/projects/
 
 ## What does it do ?
 
@@ -26,6 +26,6 @@ All the required sources are available in flow.json and al.
 2. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file. Options in the compose file are documented in the file itself.
 3. Start the docker stack using docker-compose.yml with `docker compose up -d`
    
-You can connect to the system where you started the container using http://@IP_Address:1880. It is possible to update the flows to tweak this to your needs. 
+You can connect to the system where you started the container using http://@IP_Address:1880.
 This web interface is not password protected. It can be protected, eg. using traefik to proxy NodeRed and add authentication and secured (HTTPS) access.
 
