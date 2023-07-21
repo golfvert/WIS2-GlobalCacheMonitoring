@@ -11,8 +11,9 @@ services:
       - MQTT_GB_BROKER=GlobalBroker_URL   # Global Broker URL URL broker such as mqtts://broker.example.com:8883 or wss://broker.example.com:443
       - MQTT_GB_USERNAME=
       - MQTT_GB_PASSWORD=
-      - MQTT_GB_REPUBLISH=true # or false or absent - if true will republish the timed out original message on:
+      - MQTT_GB_REPUBLISH=true # or false or absent - if true will republish the timed out original messages on:
       - MQTT_GB_REPUBLISH_TOPIC=Something # this topic / the name of the cache
+      - MQTT_LOG=true # or false or absent - if true will log the timed out original messages 
       - MQTT_DWD_BROKER=DWD_Broker_URL   # DWD Cache URL such as mqtts://broker.cache.com:8883 or wss://broker.cache.com:443
       - MQTT_DWD_USERNAME=
       - MQTT_DWD_PASSWORD=

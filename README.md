@@ -26,13 +26,12 @@ All the required source is available in flow.json and al.
 - a. docker-compose.yml
 - b. flow.json, settings.js, flow_cred.json, package.json
 2. Create a directory within your $HOME eg. WIS2GlobalCacheMonitoring
-3. In this directory create additional directories: data, redis
-4. Copy the files from b. above in the data directory
+3. In this directory create additional directories: nodered, nodered/log, redis
+4. Copy the files from b. above in the nodered directory
 5. Check the docker-compose.yml to make sure that the ports exposed are available on your system. Adjust the volume accordingly.
-6. Configure all ENV variable required (Connection to MQTT brokers, delays,..) in the compose file
+6. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file.
 7. Start the docker stack using docker-compose.yml with `docker compose up -d`
    
-You can connect to the system where you started the container using http://@IP_Address:1880. It is possible to update the flows to tweak this to your needs. Eg. logging on file the messages for data not cached... 
-The node `flogger` is installed but not currently used. It can be configured to log into the 
+You can connect to the system where you started the container using http://@IP_Address:1880. It is possible to update the flows to tweak this to your needs. 
 This web interface is not password protected. It can be protected, eg. using traefik to proxy NodeRed and add authentication and secured (HTTPS) access.
 
