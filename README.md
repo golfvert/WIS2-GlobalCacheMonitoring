@@ -17,7 +17,7 @@ All the required source is available in flow.json and al.
 
 1. Listen to the topic (see MQTT_TOPIC env variable - `cache/a/wis2`or `origin/a/wis2` will be added in front of the topic - ) from Global Caches (at the moment, DWD and JMA) and Global Broker
 2. Using `data_id` as the key compute the time difference between the message annoucing the availability of the data from the origin (the data producer) and the caches. 
-3. Four different thresholds (time in seconds) are defined in the `Config` node using the DEALY env variables. Depending on the delay between `orig` and `cache` the matching label in the metrics will be used.
+3. Four different thresholds (time in seconds) are defined in the `Config` node using the DELAY env variables. Depending on the delay between `origin` and `cache` the matching label in the metrics will be used.
 4. It then provides prometheus metrics available at http://@IP:1880/metrics (This URL is not password protected. It can be protected, eg. using traefik to proxy NodeRed and add authentication and secured (HTTPS) access.)
 
 ## How to start ?
@@ -29,7 +29,7 @@ All the required source is available in flow.json and al.
 3. In this directory create additional directories: nodered, nodered/log, redis
 4. Copy the files from b. above in the nodered directory
 5. Check the docker-compose.yml to make sure that the ports exposed are available on your system. Adjust the volume accordingly.
-6. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file.
+6. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file. Options in the compose file are documented in the file itself.
 7. Start the docker stack using docker-compose.yml with `docker compose up -d`
    
 You can connect to the system where you started the container using http://@IP_Address:1880. It is possible to update the flows to tweak this to your needs. 

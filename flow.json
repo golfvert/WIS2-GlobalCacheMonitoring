@@ -30,38 +30,6 @@
         "color": "#DDAA99"
     },
     {
-        "id": "daff48c4491dbe97",
-        "type": "group",
-        "z": "369ed2b7a1b91c6a",
-        "style": {
-            "stroke": "#999999",
-            "stroke-opacity": "1",
-            "fill": "none",
-            "fill-opacity": "1",
-            "label": true,
-            "label-position": "nw",
-            "color": "#a4a4a4"
-        },
-        "nodes": [
-            "4ae80f6d45c0588a",
-            "5e6720a99a87cb61",
-            "7a8b68f691ce1b36",
-            "c33d786a07240304",
-            "5a84782883ce2d9a",
-            "621f450f14b85331",
-            "14c5b29d8e8e46ee",
-            "c36d09a51882792b",
-            "7db3095835943be8",
-            "0948bc79645f85e1",
-            "faa2e2be2aa03d3a",
-            "29f3c3d7552f606b"
-        ],
-        "x": 234,
-        "y": 139,
-        "w": 652,
-        "h": 382
-    },
-    {
         "id": "4e0958965f2b8fc8",
         "type": "prometheus-metric-config",
         "name": "wmo_wis2_gb_gc_cache_delay",
@@ -81,11 +49,11 @@
         "id": "8c4d36462aa433fc",
         "type": "mqtt-broker",
         "name": "GB",
-        "broker": "${MQTT_GB_BROKER}",
-        "port": "",
+        "broker": "mqtts://globalbroker.meteo.fr:8883",
+        "port": "1883",
         "tls": "",
         "clientid": "",
-        "autoConnect": false,
+        "autoConnect": true,
         "usetls": false,
         "protocolVersion": "4",
         "keepalive": "60",
@@ -123,13 +91,41 @@
         "mtype": "counter"
     },
     {
+        "id": "8cf5f6b5.937088",
+        "type": "mqtt-broker",
+        "name": "Subscriber - DWD",
+        "broker": "mqtts://wis2.dwd.de:8883",
+        "port": "",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
         "id": "2a298aa9e8350075",
         "type": "mqtt-broker",
-        "name": "JMA",
-        "broker": "${MQTT_JMA_BROKER}",
-        "port": "",
+        "name": "Subscriber - JMA",
+        "broker": "mqtts://wisdev.kishou.go.jp",
+        "port": "1883",
         "clientid": "",
-        "autoConnect": false,
+        "autoConnect": true,
         "usetls": false,
         "protocolVersion": "4",
         "keepalive": "60",
@@ -156,46 +152,6 @@
         "options": "redis-monitor:6379",
         "cluster": false,
         "optionsType": "str"
-    },
-    {
-        "id": "bd0b1528395e9852",
-        "type": "mqtt-broker",
-        "name": "DWD",
-        "broker": "${MQTT_DWD_BROKER}",
-        "port": "",
-        "tls": "",
-        "clientid": "",
-        "autoConnect": false,
-        "usetls": false,
-        "protocolVersion": "4",
-        "keepalive": "60",
-        "cleansession": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
-    },
-    {
-        "id": "791180926065b631",
-        "type": "config-log",
-        "logname": "Logs",
-        "logdir": "/log",
-        "stamp": "utc",
-        "logstyle": "json",
-        "logrotate": true,
-        "logcompress": false,
-        "logrotatecount": "10",
-        "logsize": "100000"
     },
     {
         "id": "ba4d10a3dddf288c",
@@ -563,6 +519,92 @@
         ]
     },
     {
+        "id": "c36d09a51882792b",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Get Notifications",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[\"set\",\"notify-keyspace-events\",\"KEx\"]",
+        "payloadType": "json",
+        "x": 370,
+        "y": 120,
+        "wires": [
+            [
+                "7db3095835943be8"
+            ]
+        ]
+    },
+    {
+        "id": "7db3095835943be8",
+        "type": "redis-command",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "command": "CONFIG",
+        "name": "",
+        "topic": "",
+        "params": "[]",
+        "paramsType": "json",
+        "payloadType": "json",
+        "block": false,
+        "x": 560,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "14c5b29d8e8e46ee",
+        "type": "redis-instance",
+        "z": "369ed2b7a1b91c6a",
+        "server": "ca84317db895143e",
+        "name": "",
+        "topic": "redis",
+        "location": "global",
+        "x": 330,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "34bb3f297d5a5d06",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "d": true,
+        "name": "Subscribe",
+        "props": [
+            {
+                "p": "action",
+                "v": "subscribe",
+                "vt": "str"
+            },
+            {
+                "p": "topic",
+                "v": "\"origin/a/wis2/\" & $flowContext(\"topic\")",
+                "vt": "jsonata"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 350,
+        "y": 400,
+        "wires": [
+            [
+                "3562695fbe6d3edb"
+            ]
+        ]
+    },
+    {
         "id": "3562695fbe6d3edb",
         "type": "mqtt in",
         "z": "369ed2b7a1b91c6a",
@@ -575,8 +617,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 430,
-        "y": 760,
+        "x": 490,
+        "y": 400,
         "wires": [
             [
                 "13c31010f0fa16a4"
@@ -628,8 +670,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 920,
-        "y": 760,
+        "x": 980,
+        "y": 400,
         "wires": [
             [
                 "ac2f3665ce2c432a"
@@ -648,8 +690,8 @@
         "paramsType": "json",
         "payloadType": "json",
         "block": false,
-        "x": 740,
-        "y": 860,
+        "x": 800,
+        "y": 500,
         "wires": [
             [
                 "5e76af9f14abd8ac"
@@ -671,8 +713,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 870,
-        "y": 860,
+        "x": 930,
+        "y": 500,
         "wires": [
             [
                 "6b4bab9e76d27ad4",
@@ -697,8 +739,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 990,
-        "y": 860,
+        "x": 1050,
+        "y": 500,
         "wires": [
             [
                 "b228c0f17ec7cd27",
@@ -726,8 +768,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1150,
-        "y": 860,
+        "x": 1210,
+        "y": 500,
         "wires": [
             [
                 "fd387c6080fd43d4"
@@ -746,8 +788,8 @@
         "paramsType": "json",
         "payloadType": "json",
         "block": false,
-        "x": 1280,
-        "y": 860,
+        "x": 1340,
+        "y": 500,
         "wires": [
             []
         ]
@@ -771,8 +813,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1150,
-        "y": 900,
+        "x": 1210,
+        "y": 540,
         "wires": [
             [
                 "f22598464872e22e"
@@ -791,8 +833,8 @@
         "paramsType": "json",
         "payloadType": "json",
         "block": false,
-        "x": 1280,
-        "y": 900,
+        "x": 1340,
+        "y": 540,
         "wires": [
             []
         ]
@@ -816,8 +858,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1150,
-        "y": 940,
+        "x": 1210,
+        "y": 580,
         "wires": [
             [
                 "5fc95dfc26f25b49"
@@ -836,8 +878,8 @@
         "paramsType": "json",
         "payloadType": "json",
         "block": false,
-        "x": 1280,
-        "y": 940,
+        "x": 1340,
+        "y": 580,
         "wires": [
             []
         ]
@@ -859,8 +901,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 440,
-        "y": 660,
+        "x": 500,
+        "y": 300,
         "wires": [
             [
                 "143fdd58056cb73c"
@@ -882,8 +924,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 790,
-        "y": 760,
+        "x": 850,
+        "y": 400,
         "wires": [
             [
                 "2cffea3a4b970319"
@@ -923,8 +965,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 730,
-        "y": 660,
+        "x": 790,
+        "y": 300,
         "wires": [
             [
                 "9c9366116b24124d",
@@ -959,8 +1001,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 3,
-        "x": 580,
-        "y": 660,
+        "x": 640,
+        "y": 300,
         "wires": [
             [
                 "0714ac7d709f069a"
@@ -1004,8 +1046,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 730,
-        "y": 620,
+        "x": 790,
+        "y": 260,
         "wires": [
             [
                 "c1ddd2092fba8534",
@@ -1025,8 +1067,8 @@
         "paramsType": "json",
         "payloadType": "json",
         "block": false,
-        "x": 890,
-        "y": 680,
+        "x": 950,
+        "y": 320,
         "wires": [
             [
                 "8bc9a2183ea53e53"
@@ -1045,8 +1087,8 @@
         "paramsType": "json",
         "payloadType": "json",
         "block": false,
-        "x": 890,
-        "y": 600,
+        "x": 950,
+        "y": 240,
         "wires": [
             [
                 "368f8e2b9bbf8bb4"
@@ -1059,8 +1101,8 @@
         "z": "369ed2b7a1b91c6a",
         "name": "Not cached",
         "metric": "da38939ded0e1ee2",
-        "x": 1080,
-        "y": 640,
+        "x": 1140,
+        "y": 280,
         "wires": []
     },
     {
@@ -1082,8 +1124,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 900,
-        "y": 640,
+        "x": 960,
+        "y": 280,
         "wires": [
             [
                 "071423de4c29b3c5"
@@ -1096,8 +1138,8 @@
         "z": "369ed2b7a1b91c6a",
         "name": "Origin",
         "metric": "566a7ac5d348970b",
-        "x": 1150,
-        "y": 820,
+        "x": 1210,
+        "y": 460,
         "wires": []
     },
     {
@@ -1119,8 +1161,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1010,
-        "y": 820,
+        "x": 1070,
+        "y": 460,
         "wires": [
             [
                 "3c27f31f1810a8ff"
@@ -1139,8 +1181,8 @@
         "septopics": true,
         "property": "payload",
         "topi": "topic",
-        "x": 550,
-        "y": 760,
+        "x": 610,
+        "y": 400,
         "wires": [
             [
                 "b1ba86cb63b1f72a"
@@ -1148,9 +1190,89 @@
         ]
     },
     {
+        "id": "4de2b878a1f0d9ab",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Init variables",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 350,
+        "y": 200,
+        "wires": [
+            [
+                "9eaa5e1bccdafe0e"
+            ]
+        ]
+    },
+    {
+        "id": "9eaa5e1bccdafe0e",
+        "type": "change",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Delays",
+        "rules": [
+            {
+                "t": "set",
+                "p": "delay1",
+                "pt": "flow",
+                "to": "120",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "delay2",
+                "pt": "flow",
+                "to": "300",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "delay3",
+                "pt": "flow",
+                "to": "600",
+                "tot": "num"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "flow",
+                "to": "#",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "timeout_orig",
+                "pt": "flow",
+                "to": "3600",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "timeout_cache",
+                "pt": "flow",
+                "to": "1800",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "5396c93a4e91bbc9",
         "type": "inject",
         "z": "369ed2b7a1b91c6a",
+        "d": true,
         "name": "Subscription",
         "props": [
             {
@@ -1169,8 +1291,8 @@
         "once": true,
         "onceDelay": "1",
         "topic": "",
-        "x": 290,
-        "y": 960,
+        "x": 350,
+        "y": 600,
         "wires": [
             [
                 "dac9803498bc624c"
@@ -1183,8 +1305,8 @@
         "z": "369ed2b7a1b91c6a",
         "name": "DWD Cache",
         "info": "",
-        "x": 290,
-        "y": 900,
+        "x": 350,
+        "y": 540,
         "wires": []
     },
     {
@@ -1195,13 +1317,13 @@
         "topic": "",
         "qos": "2",
         "datatype": "json",
-        "broker": "bd0b1528395e9852",
+        "broker": "8cf5f6b5.937088",
         "nl": false,
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 430,
-        "y": 960,
+        "x": 490,
+        "y": 600,
         "wires": [
             [
                 "f0cd96ab81e29fa5"
@@ -1227,8 +1349,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 670,
-        "y": 960,
+        "x": 730,
+        "y": 600,
         "wires": [
             [
                 "d3fe89ee08f501f3"
@@ -1240,8 +1362,8 @@
         "type": "subflow:94d82b50a4841ada",
         "z": "369ed2b7a1b91c6a",
         "name": "Monitor",
-        "x": 800,
-        "y": 960,
+        "x": 860,
+        "y": 600,
         "wires": []
     },
     {
@@ -1257,8 +1379,8 @@
         "rap": true,
         "rh": 0,
         "inputs": 1,
-        "x": 430,
-        "y": 1100,
+        "x": 490,
+        "y": 740,
         "wires": [
             [
                 "abd9e652b82edf3b"
@@ -1284,8 +1406,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 670,
-        "y": 1100,
+        "x": 730,
+        "y": 740,
         "wires": [
             [
                 "10b76b8d9e31fafb"
@@ -1297,14 +1419,15 @@
         "type": "subflow:94d82b50a4841ada",
         "z": "369ed2b7a1b91c6a",
         "name": "Monitor",
-        "x": 800,
-        "y": 1100,
+        "x": 860,
+        "y": 740,
         "wires": []
     },
     {
         "id": "9c3d0c6ddf03dbfb",
         "type": "inject",
         "z": "369ed2b7a1b91c6a",
+        "d": true,
         "name": "Subscription",
         "props": [
             {
@@ -1323,8 +1446,8 @@
         "once": true,
         "onceDelay": "1",
         "topic": "",
-        "x": 290,
-        "y": 1100,
+        "x": 350,
+        "y": 740,
         "wires": [
             [
                 "a02d83d1c04d3e3a"
@@ -1337,8 +1460,8 @@
         "z": "369ed2b7a1b91c6a",
         "name": "JMA Cache",
         "info": "",
-        "x": 290,
-        "y": 1040,
+        "x": 350,
+        "y": 680,
         "wires": []
     },
     {
@@ -1352,8 +1475,8 @@
         "ignore": false,
         "pauseAtStartup": false,
         "topicDependent": false,
-        "x": 670,
-        "y": 760,
+        "x": 730,
+        "y": 400,
         "wires": [
             [],
             [
@@ -1372,8 +1495,8 @@
         "ignore": false,
         "pauseAtStartup": false,
         "topicDependent": false,
-        "x": 550,
-        "y": 960,
+        "x": 610,
+        "y": 600,
         "wires": [
             [],
             [
@@ -1392,8 +1515,8 @@
         "ignore": false,
         "pauseAtStartup": false,
         "topicDependent": false,
-        "x": 550,
-        "y": 1100,
+        "x": 610,
+        "y": 740,
         "wires": [
             [],
             [
@@ -1420,8 +1543,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1030,
-        "y": 600,
+        "x": 1090,
+        "y": 240,
         "wires": [
             [
                 "cb3839d1a2b86096"
@@ -1440,13 +1563,6 @@
                 "pt": "msg",
                 "to": "{ \t    \"id\": msg.uuid,\t    \"alert\": \"Data not in cache\",\t    \"original\": $eval(msg.message)\t}",
                 "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "topic",
-                "pt": "msg",
-                "to": "$flowContext(\"mqtt_republish_topic\") & \"/dwd\"",
-                "tot": "jsonata"
             }
         ],
         "action": "",
@@ -1454,12 +1570,12 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1280,
-        "y": 600,
+        "x": 1340,
+        "y": 240,
         "wires": [
             [
-                "75c9f6b3fb9baafb",
-                "7a08efc83f242773"
+                "7e57f081cd6806a1",
+                "4bc514058766ccc0"
             ]
         ]
     },
@@ -1468,7 +1584,7 @@
         "type": "mqtt out",
         "z": "369ed2b7a1b91c6a",
         "name": "Alert",
-        "topic": "",
+        "topic": "monitoring/a/wis2/fra/meteo-france/report/globalservices/cache/dwd",
         "qos": "2",
         "retain": "true",
         "respTopic": "",
@@ -1477,8 +1593,24 @@
         "correl": "",
         "expiry": "",
         "broker": "8c4d36462aa433fc",
-        "x": 1570,
-        "y": 600,
+        "x": 1470,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "4bc514058766ccc0",
+        "type": "debug",
+        "z": "369ed2b7a1b91c6a",
+        "name": "debug 54",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 180,
         "wires": []
     },
     {
@@ -1500,8 +1632,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1030,
-        "y": 680,
+        "x": 1090,
+        "y": 320,
         "wires": [
             [
                 "c6bae45490408fcd"
@@ -1520,13 +1652,6 @@
                 "pt": "msg",
                 "to": "{ \t    \"id\": msg.uuid,\t    \"alert\": \"Data not in cache\",\t    \"original\": $eval(msg.message)\t}",
                 "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "topic",
-                "pt": "msg",
-                "to": "$flowContext(\"mqtt_republish_topic\") & \"/jma\"",
-                "tot": "jsonata"
             }
         ],
         "action": "",
@@ -1534,12 +1659,12 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1280,
-        "y": 680,
+        "x": 1340,
+        "y": 320,
         "wires": [
             [
-                "6c2dd621c2a972ec",
-                "7720f986a2e0976f"
+                "4120f22a7546842b",
+                "dd2839f6c85066a1"
             ]
         ]
     },
@@ -1548,7 +1673,7 @@
         "type": "mqtt out",
         "z": "369ed2b7a1b91c6a",
         "name": "Alert",
-        "topic": "",
+        "topic": "monitoring/a/wis2/fra/meteo-france/report/globalservices/cache/jma",
         "qos": "2",
         "retain": "true",
         "respTopic": "",
@@ -1557,8 +1682,24 @@
         "correl": "",
         "expiry": "",
         "broker": "8c4d36462aa433fc",
-        "x": 1570,
-        "y": 680,
+        "x": 1470,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "dd2839f6c85066a1",
+        "type": "debug",
+        "z": "369ed2b7a1b91c6a",
+        "name": "debug 55",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1480,
+        "y": 380,
         "wires": []
     },
     {
@@ -1572,8 +1713,8 @@
         "name": "uuid",
         "field": "uuid",
         "fieldType": "msg",
-        "x": 1150,
-        "y": 600,
+        "x": 1210,
+        "y": 240,
         "wires": [
             [
                 "0f7a4bbeda3fef6e"
@@ -1591,8 +1732,8 @@
         "name": "uuid",
         "field": "uuid",
         "fieldType": "msg",
-        "x": 1150,
-        "y": 680,
+        "x": 1210,
+        "y": 320,
         "wires": [
             [
                 "7f9f7584404158a6"
@@ -1609,658 +1750,11 @@
         "topic": "__key*__:*",
         "obj": true,
         "timeout": 0,
-        "x": 290,
-        "y": 660,
+        "x": 350,
+        "y": 300,
         "wires": [
             [
                 "d1f72b9058e9778d"
-            ]
-        ]
-    },
-    {
-        "id": "faa2e2be2aa03d3a",
-        "type": "mqtt out",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Define JMA",
-        "topic": "",
-        "qos": "2",
-        "retain": "true",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "2a298aa9e8350075",
-        "x": 790,
-        "y": 360,
-        "wires": []
-    },
-    {
-        "id": "29f3c3d7552f606b",
-        "type": "change",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Handle connection JMA",
-        "rules": [
-            {
-                "t": "set",
-                "p": "action",
-                "pt": "msg",
-                "to": "connect",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "broker",
-                "pt": "msg",
-                "to": "{}",
-                "tot": "json"
-            },
-            {
-                "t": "set",
-                "p": "broker.force",
-                "pt": "msg",
-                "to": "true",
-                "tot": "bool"
-            },
-            {
-                "t": "set",
-                "p": "broker.url",
-                "pt": "msg",
-                "to": "MQTT_JMA_BROKER",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.usetls",
-                "pt": "msg",
-                "to": "$contains($env(\"MQTT_JMA_BROKER\"),/wss/) or $contains($env(\"MQTT_JMA_BROKER\"),/mqtts/)",
-                "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "broker.username",
-                "pt": "msg",
-                "to": "MQTT_JMA_USERNAME",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.password",
-                "pt": "msg",
-                "to": "MQTT_JMA_PASSWORD",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.protocolVersion",
-                "pt": "msg",
-                "to": "$length($env(\"MQTT_JMA_BROKERVERSION\")) = 0 ? 4 : $env(\"MQTT_JMA_BROKERVERSION\")",
-                "tot": "jsonata"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 590,
-        "y": 360,
-        "wires": [
-            [
-                "faa2e2be2aa03d3a"
-            ]
-        ]
-    },
-    {
-        "id": "0948bc79645f85e1",
-        "type": "mqtt out",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Define GB",
-        "topic": "",
-        "qos": "2",
-        "retain": "true",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "8c4d36462aa433fc",
-        "x": 790,
-        "y": 240,
-        "wires": []
-    },
-    {
-        "id": "4ae80f6d45c0588a",
-        "type": "mqtt out",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Define DWD",
-        "topic": "",
-        "qos": "2",
-        "retain": "true",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "bd0b1528395e9852",
-        "x": 790,
-        "y": 300,
-        "wires": []
-    },
-    {
-        "id": "5e6720a99a87cb61",
-        "type": "change",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Handle connection DWD",
-        "rules": [
-            {
-                "t": "set",
-                "p": "action",
-                "pt": "msg",
-                "to": "connect",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "broker",
-                "pt": "msg",
-                "to": "{}",
-                "tot": "json"
-            },
-            {
-                "t": "set",
-                "p": "broker.force",
-                "pt": "msg",
-                "to": "true",
-                "tot": "bool"
-            },
-            {
-                "t": "set",
-                "p": "broker.url",
-                "pt": "msg",
-                "to": "MQTT_DWD_BROKER",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.usetls",
-                "pt": "msg",
-                "to": "$contains($env(\"MQTT_DWD_BROKER\"),/wss/) or $contains($env(\"MQTT_DWD_BROKER\"),/mqtts/)",
-                "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "broker.username",
-                "pt": "msg",
-                "to": "MQTT_DWD_USERNAME",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.password",
-                "pt": "msg",
-                "to": "MQTT_DWD_PASSWORD",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.protocolVersion",
-                "pt": "msg",
-                "to": "$length($env(\"MQTT_DWD_BROKERVERSION\")) = 0 ? 4 : $env(\"MQTT_DWD_BROKERVERSION\")",
-                "tot": "jsonata"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 590,
-        "y": 300,
-        "wires": [
-            [
-                "4ae80f6d45c0588a"
-            ]
-        ]
-    },
-    {
-        "id": "7a8b68f691ce1b36",
-        "type": "inject",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 350,
-        "y": 320,
-        "wires": [
-            [
-                "5e6720a99a87cb61",
-                "c33d786a07240304",
-                "29f3c3d7552f606b",
-                "621f450f14b85331"
-            ]
-        ]
-    },
-    {
-        "id": "c33d786a07240304",
-        "type": "change",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Handle connection GB",
-        "rules": [
-            {
-                "t": "set",
-                "p": "action",
-                "pt": "msg",
-                "to": "connect",
-                "tot": "str"
-            },
-            {
-                "t": "set",
-                "p": "broker",
-                "pt": "msg",
-                "to": "{}",
-                "tot": "json"
-            },
-            {
-                "t": "set",
-                "p": "broker.force",
-                "pt": "msg",
-                "to": "true",
-                "tot": "bool"
-            },
-            {
-                "t": "set",
-                "p": "broker.url",
-                "pt": "msg",
-                "to": "MQTT_GB_BROKER",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.usetls",
-                "pt": "msg",
-                "to": "$contains($env(\"MQTT_GB_BROKER\"),/wss/) or $contains($env(\"MQTT_GB_BROKER\"),/mqtts/)",
-                "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "broker.verifyservercert",
-                "pt": "msg",
-                "to": "$length($env(\"MQTT_GB_VERIFYCERT\")) = 0 ? true : $env(\"MQTT_GB_VERIFYCERT\")",
-                "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "broker.username",
-                "pt": "msg",
-                "to": "MQTT_GB_USERNAME",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.password",
-                "pt": "msg",
-                "to": "MQTT_GB_PASSWORD",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "broker.protocolVersion",
-                "pt": "msg",
-                "to": "$length($env(\"MQTT_GB_BROKERVERSION\")) = 0 ? 4 : $env(\"MQTT_GB_BROKERVERSION\")",
-                "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "mqtt_republish",
-                "pt": "flow",
-                "to": "$length($env(\"MQTT_GB_REPUBLISH\")) = 0 ? \"false\" : $env(\"MQTT_GB_REPUBLISH\")",
-                "tot": "jsonata"
-            },
-            {
-                "t": "set",
-                "p": "mqtt_republish_topic",
-                "pt": "flow",
-                "to": "$env(\"MQTT_GB_REPUBLISH_TOPIC\")",
-                "tot": "jsonata"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 580,
-        "y": 240,
-        "wires": [
-            [
-                "0948bc79645f85e1"
-            ]
-        ]
-    },
-    {
-        "id": "5a84782883ce2d9a",
-        "type": "comment",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Initialize",
-        "info": "",
-        "x": 330,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "621f450f14b85331",
-        "type": "change",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Config",
-        "rules": [
-            {
-                "t": "set",
-                "p": "delay1",
-                "pt": "flow",
-                "to": "DELAY1",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "delay2",
-                "pt": "flow",
-                "to": "DELAY2",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "delay3",
-                "pt": "flow",
-                "to": "DELAY3",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "timeout_cache",
-                "pt": "flow",
-                "to": "DELAY4",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "timeout_orig",
-                "pt": "flow",
-                "to": "DELAY_ORIG",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "topic",
-                "pt": "flow",
-                "to": "MQTT_TOPIC",
-                "tot": "env"
-            },
-            {
-                "t": "set",
-                "p": "log",
-                "pt": "flow",
-                "to": "LOG",
-                "tot": "env"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 530,
-        "y": 420,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "14c5b29d8e8e46ee",
-        "type": "redis-instance",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "server": "ca84317db895143e",
-        "name": "",
-        "topic": "redis",
-        "location": "global",
-        "x": 470,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "c36d09a51882792b",
-        "type": "inject",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "name": "Get Notifications",
-        "props": [
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "[\"set\",\"notify-keyspace-events\",\"KEx\"]",
-        "payloadType": "json",
-        "x": 370,
-        "y": 480,
-        "wires": [
-            [
-                "7db3095835943be8"
-            ]
-        ]
-    },
-    {
-        "id": "7db3095835943be8",
-        "type": "redis-command",
-        "z": "369ed2b7a1b91c6a",
-        "g": "daff48c4491dbe97",
-        "server": "ca84317db895143e",
-        "command": "CONFIG",
-        "name": "",
-        "topic": "",
-        "params": "[]",
-        "paramsType": "json",
-        "payloadType": "json",
-        "block": false,
-        "x": 560,
-        "y": 480,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "75c9f6b3fb9baafb",
-        "type": "switch",
-        "z": "369ed2b7a1b91c6a",
-        "name": "Republish ?",
-        "property": "mqtt_republish",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "true",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 1430,
-        "y": 600,
-        "wires": [
-            [
-                "7e57f081cd6806a1"
-            ]
-        ]
-    },
-    {
-        "id": "6c2dd621c2a972ec",
-        "type": "switch",
-        "z": "369ed2b7a1b91c6a",
-        "name": "Republish ?",
-        "property": "mqtt_republish",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "true",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 1430,
-        "y": 680,
-        "wires": [
-            [
-                "4120f22a7546842b"
-            ]
-        ]
-    },
-    {
-        "id": "7a08efc83f242773",
-        "type": "switch",
-        "z": "369ed2b7a1b91c6a",
-        "name": "Log ?",
-        "property": "log",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "true",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 1410,
-        "y": 540,
-        "wires": [
-            [
-                "b38c7a7bd09a21fd"
-            ]
-        ]
-    },
-    {
-        "id": "7720f986a2e0976f",
-        "type": "switch",
-        "z": "369ed2b7a1b91c6a",
-        "name": "Log ?",
-        "property": "log",
-        "propertyType": "flow",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "true",
-                "vt": "str"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 1410,
-        "y": 740,
-        "wires": [
-            [
-                "2ad3d604dc195a08"
-            ]
-        ]
-    },
-    {
-        "id": "b38c7a7bd09a21fd",
-        "type": "flogger",
-        "z": "369ed2b7a1b91c6a",
-        "name": "DWD",
-        "logfile": "dwd.json",
-        "inputchoice": "object",
-        "inputobject": "payload",
-        "inputobjectType": "msg",
-        "inputmoustache": "Recieved payload {{payload}} and topic {{topic}}",
-        "loglevel": "INFO",
-        "logconfig": "791180926065b631",
-        "sendpane": true,
-        "x": 1530,
-        "y": 540,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "2ad3d604dc195a08",
-        "type": "flogger",
-        "z": "369ed2b7a1b91c6a",
-        "name": "JMA",
-        "logfile": "jma.json",
-        "inputchoice": "object",
-        "inputobject": "payload",
-        "inputobjectType": "msg",
-        "inputmoustache": "Recieved payload {{payload}} and topic {{topic}}",
-        "loglevel": "INFO",
-        "logconfig": "791180926065b631",
-        "sendpane": true,
-        "x": 1530,
-        "y": 740,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "34bb3f297d5a5d06",
-        "type": "inject",
-        "z": "369ed2b7a1b91c6a",
-        "name": "Subscribe",
-        "props": [
-            {
-                "p": "action",
-                "v": "subscribe",
-                "vt": "str"
-            },
-            {
-                "p": "topic",
-                "v": "\"origin/a/wis2/\" & $flowContext(\"topic\")",
-                "vt": "jsonata"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "topic": "",
-        "x": 290,
-        "y": 760,
-        "wires": [
-            [
-                "3562695fbe6d3edb"
             ]
         ]
     }
