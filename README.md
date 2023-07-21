@@ -8,10 +8,10 @@ The code in this repository is to provide an example of a WIS2 Sensor Centre for
 This is the source code of the Sensor Center to monitor the WIS2 Global Cache.
 It runs using docker and relies on two containers running on the same bridged network.
 The containers are:
-1. Node-Red for all the processing part
+1. A specialised Node-Red container for all the processing part (the flows.json available here is the source code included in the container)
 2. Redis to store in memory (and saved on disk) key/value pairs 
 
-All the required source is available in flow.json and al.
+All the required sources are available in flow.json and al.
 
 ## What does it do ?
 
@@ -22,15 +22,9 @@ All the required source is available in flow.json and al.
 
 ## How to start ?
 
-1. Download 
-- a. docker-compose.yml
-- b. flow.json, settings.js, flow_cred.json, package.json
-2. Create a directory within your $HOME eg. WIS2GlobalCacheMonitoring
-3. In this directory create additional directories: nodered, nodered/log, redis
-4. Copy the files from b. above in the nodered directory
-5. Check the docker-compose.yml to make sure that the ports exposed are available on your system. Adjust the volume accordingly.
-6. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file. Options in the compose file are documented in the file itself.
-7. Start the docker stack using docker-compose.yml with `docker compose up -d`
+1. Check the docker-compose.yml to make sure that the ports exposed are available on your system. Adjust the local volumes accordingly (in the example $HOME/WIS2GlobalCacheMonitoring/log and $HOME/WIS2GlobalCacheMonitoring/redis).
+2. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file. Options in the compose file are documented in the file itself.
+3. Start the docker stack using docker-compose.yml with `docker compose up -d`
    
 You can connect to the system where you started the container using http://@IP_Address:1880. It is possible to update the flows to tweak this to your needs. 
 This web interface is not password protected. It can be protected, eg. using traefik to proxy NodeRed and add authentication and secured (HTTPS) access.

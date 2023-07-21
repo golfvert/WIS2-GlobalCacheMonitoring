@@ -1,9 +1,9 @@
 version: "3.7"
 
 services:
-  node-red-monitor:
-    container_name: node-red-monitor
-    image: golfvert/wis2sensorcenterglobalcache:1.0.0
+  wis2-gc-monitor:
+    container_name: wis2-gc-monitor
+    image: golfvert/wis2sensorcenterglobalcache:1.0.4
     environment:
       - TZ=Europe/Paris
       - REDIS_URL=redis://redis:6379
@@ -12,8 +12,8 @@ services:
       - MQTT_GB_USERNAME=
       - MQTT_GB_PASSWORD=
       - MQTT_GB_REPUBLISH=true # or false or absent - if true will republish the timed out original messages on:
-      - MQTT_GB_REPUBLISH_TOPIC=Something # this topic / the name of the cache. It will use the Global Broker. So, write access to it is required.
-      - MQTT_LOG=true # or false or absent - if true will log the timed out original messages 
+      - MQTT_GB_REPUBLISH_TOPIC=Something # this topic + the name of the cache (eg monitoring/a/wis2/fra/meteofrance/report/globalservices/cache/dwd). It will publish on the Global Broker. So, write access to it is required.
+      - MQTT_LOG=true # or false or absent - if true will log the timed out original messages in the volume defined below. Up to 10 files of 100MB will be created (so 1GB of space is required). Log rotation is implemented.
       - MQTT_DWD_BROKER=DWD_Broker_URL   # DWD Cache URL such as mqtts://broker.cache.com:8883 or wss://broker.cache.com:443
       - MQTT_DWD_USERNAME=
       - MQTT_DWD_PASSWORD=
@@ -30,11 +30,11 @@ services:
     networks:
       - sensor
     depends_on:
-      - redis-monitor
+      - redis
     volumes:
       - $HOME/WIS2GlobalCacheMonitoring/log:/data/log
-  redis-monitor:
-    container_name: redis-monitor
+  redis:
+    container_name: redis
     image: redis:latest
     command: redis-server --save 20 1
     ports:
