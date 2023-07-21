@@ -186,6 +186,18 @@
         "sessionExpiry": ""
     },
     {
+        "id": "791180926065b631",
+        "type": "config-log",
+        "logname": "Logs",
+        "logdir": "/log",
+        "stamp": "utc",
+        "logstyle": "json",
+        "logrotate": true,
+        "logcompress": false,
+        "logrotatecount": "10",
+        "logsize": "100000"
+    },
+    {
         "id": "ba4d10a3dddf288c",
         "type": "switch",
         "z": "94d82b50a4841ada",
@@ -547,37 +559,6 @@
         "wires": [
             [
                 "5b41d16333e4f7f0"
-            ]
-        ]
-    },
-    {
-        "id": "34bb3f297d5a5d06",
-        "type": "inject",
-        "z": "369ed2b7a1b91c6a",
-        "d": true,
-        "name": "Subscribe",
-        "props": [
-            {
-                "p": "action",
-                "v": "subscribe",
-                "vt": "str"
-            },
-            {
-                "p": "topic",
-                "v": "\"origin/a/wis2/\" & $flowContext(\"topic\")",
-                "vt": "jsonata"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "1",
-        "topic": "",
-        "x": 290,
-        "y": 760,
-        "wires": [
-            [
-                "3562695fbe6d3edb"
             ]
         ]
     },
@@ -1170,7 +1151,6 @@
         "id": "5396c93a4e91bbc9",
         "type": "inject",
         "z": "369ed2b7a1b91c6a",
-        "d": true,
         "name": "Subscription",
         "props": [
             {
@@ -1325,7 +1305,6 @@
         "id": "9c3d0c6ddf03dbfb",
         "type": "inject",
         "z": "369ed2b7a1b91c6a",
-        "d": true,
         "name": "Subscription",
         "props": [
             {
@@ -1479,8 +1458,8 @@
         "y": 600,
         "wires": [
             [
-                "4bc514058766ccc0",
-                "75c9f6b3fb9baafb"
+                "75c9f6b3fb9baafb",
+                "7a08efc83f242773"
             ]
         ]
     },
@@ -1500,22 +1479,6 @@
         "broker": "8c4d36462aa433fc",
         "x": 1570,
         "y": 600,
-        "wires": []
-    },
-    {
-        "id": "4bc514058766ccc0",
-        "type": "debug",
-        "z": "369ed2b7a1b91c6a",
-        "name": "debug 54",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1420,
-        "y": 540,
         "wires": []
     },
     {
@@ -1575,8 +1538,8 @@
         "y": 680,
         "wires": [
             [
-                "dd2839f6c85066a1",
-                "6c2dd621c2a972ec"
+                "6c2dd621c2a972ec",
+                "7720f986a2e0976f"
             ]
         ]
     },
@@ -1596,22 +1559,6 @@
         "broker": "8c4d36462aa433fc",
         "x": 1570,
         "y": 680,
-        "wires": []
-    },
-    {
-        "id": "dd2839f6c85066a1",
-        "type": "debug",
-        "z": "369ed2b7a1b91c6a",
-        "name": "debug 55",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1420,
-        "y": 740,
         "wires": []
     },
     {
@@ -2071,6 +2018,13 @@
                 "pt": "flow",
                 "to": "MQTT_TOPIC",
                 "tot": "env"
+            },
+            {
+                "t": "set",
+                "p": "log",
+                "pt": "flow",
+                "to": "LOG",
+                "tot": "env"
             }
         ],
         "action": "",
@@ -2189,6 +2143,124 @@
         "wires": [
             [
                 "4120f22a7546842b"
+            ]
+        ]
+    },
+    {
+        "id": "7a08efc83f242773",
+        "type": "switch",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Log ?",
+        "property": "log",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1410,
+        "y": 540,
+        "wires": [
+            [
+                "b38c7a7bd09a21fd"
+            ]
+        ]
+    },
+    {
+        "id": "7720f986a2e0976f",
+        "type": "switch",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Log ?",
+        "property": "log",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "true",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1410,
+        "y": 740,
+        "wires": [
+            [
+                "2ad3d604dc195a08"
+            ]
+        ]
+    },
+    {
+        "id": "b38c7a7bd09a21fd",
+        "type": "flogger",
+        "z": "369ed2b7a1b91c6a",
+        "name": "DWD",
+        "logfile": "dwd",
+        "inputchoice": "fullmsg",
+        "inputobject": "payload",
+        "inputobjectType": "msg",
+        "inputmoustache": "Recieved payload {{payload}} and topic {{topic}}",
+        "loglevel": "INFO",
+        "logconfig": "791180926065b631",
+        "sendpane": true,
+        "x": 1530,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2ad3d604dc195a08",
+        "type": "flogger",
+        "z": "369ed2b7a1b91c6a",
+        "name": "JMA",
+        "logfile": "jma",
+        "inputchoice": "fullmsg",
+        "inputobject": "payload",
+        "inputobjectType": "msg",
+        "inputmoustache": "Recieved payload {{payload}} and topic {{topic}}",
+        "loglevel": "INFO",
+        "logconfig": "791180926065b631",
+        "sendpane": true,
+        "x": 1530,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "34bb3f297d5a5d06",
+        "type": "inject",
+        "z": "369ed2b7a1b91c6a",
+        "name": "Subscribe",
+        "props": [
+            {
+                "p": "action",
+                "v": "subscribe",
+                "vt": "str"
+            },
+            {
+                "p": "topic",
+                "v": "\"origin/a/wis2/\" & $flowContext(\"topic\")",
+                "vt": "jsonata"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "x": 290,
+        "y": 760,
+        "wires": [
+            [
+                "3562695fbe6d3edb"
             ]
         ]
     }
