@@ -2208,7 +2208,7 @@
         "inputmoustache": "Recieved payload {{payload}} and topic {{topic}}",
         "loglevel": "INFO",
         "logconfig": "791180926065b631",
-        "sendpane": true,
+        "sendpane": false,
         "x": 1530,
         "y": 540,
         "wires": [
@@ -2227,7 +2227,7 @@
         "inputmoustache": "Recieved payload {{payload}} and topic {{topic}}",
         "loglevel": "INFO",
         "logconfig": "791180926065b631",
-        "sendpane": true,
+        "sendpane": false,
         "x": 1530,
         "y": 740,
         "wires": [
