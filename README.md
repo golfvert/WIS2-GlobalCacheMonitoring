@@ -22,7 +22,7 @@ All the required sources are available in flow.json and al.
 
 ## How to start ?
 
-1. Check the docker-compose.yml to make sure that the ports exposed are available on your system. Adjust the local volumes accordingly (in the example $HOME/WIS2GlobalCacheMonitoring/log and $HOME/WIS2GlobalCacheMonitoring/redis).
+1. Check the docker-compose.yaml to make sure that the ports exposed are available on your system. Adjust the local volumes accordingly (in the example $HOME/WIS2GlobalCacheMonitoring/log and $HOME/WIS2GlobalCacheMonitoring/redis).
 2. Configure all ENV variable required (Connection to MQTT brokers, delays, whether to republish messages, log them,...) in the compose file. Options in the compose file are documented in the file itself.
 3. Start the docker stack using docker-compose.yml with `docker compose up -d`
    
