@@ -153,7 +153,7 @@
         "id": "ca84317db895143e",
         "type": "redis-config",
         "name": "Redis",
-        "options": "redis-monitor:6379",
+        "options": "redis:6379",
         "cluster": false,
         "optionsType": "str"
     },

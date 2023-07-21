@@ -1,6 +1,6 @@
 ARG ARCH=amd64
-ARG NODE_VERSION=14
-ARG OS=alpine3.12
+ARG NODE_VERSION=16
+ARG OS=alpine
 
 #### Stage BASE ########################################################################################################
 FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
@@ -34,17 +34,19 @@ WORKDIR /usr/src/node-red
 # Setup SSH known_hosts file
 COPY known_hosts.sh .
 RUN ./known_hosts.sh /etc/ssh/ssh_known_hosts && rm /usr/src/node-red/known_hosts.sh
+RUN echo "PubkeyAcceptedKeyTypes +ssh-rsa" >> /etc/ssh/ssh_config
 
 # package.json contains Node-RED NPM module and node dependencies
 COPY package.json .
 COPY flows.json /data
 COPY settings.js /data
+COPY scripts/entrypoint.sh .
 
 #### Stage BUILD #######################################################################################################
 FROM base AS build
 
 # Install Build tools
-RUN apk add --no-cache --virtual buildtools build-base linux-headers udev python2 && \
+RUN apk add --no-cache --virtual buildtools build-base linux-headers udev python3 && \
     npm install --unsafe-perm --no-update-notifier --no-fund --only=production && \
     /tmp/remove_native_gpio.sh && \
     cp -R node_modules prod_node_modules
@@ -56,7 +58,7 @@ ARG BUILD_VERSION
 ARG BUILD_REF
 ARG NODE_RED_VERSION
 ARG ARCH
-ARG TAG_SUFFIX=minimal
+ARG TAG_SUFFIX=default
 
 LABEL org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.docker.dockerfile=".docker/Dockerfile.alpine" \
@@ -74,11 +76,11 @@ LABEL org.label-schema.build-date=${BUILD_DATE} \
 COPY --from=build /usr/src/node-red/prod_node_modules ./node_modules
 
 # Chown, install devtools & Clean up
-#RUN chown -R node-red:root /usr/src/node-red && \
-#    /tmp/install_devtools.sh && \
-#    rm -r /tmp/*
 RUN chown -R node-red:root /usr/src/node-red && \
+    /tmp/install_devtools.sh && \
     rm -r /tmp/*
+
+RUN npm config set cache /data/.npm --global 
 
 USER node-red
 
@@ -97,4 +99,5 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
-ENTRYPOINT ["npm", "start", "--cache", "/data/.npm", "--", "--userDir", "/data"]
+# ENTRYPOINT ["npm", "start", "--cache", "/data/.npm", "--", "--userDir", "/data"]
+ENTRYPOINT ["./entrypoint.sh"]
