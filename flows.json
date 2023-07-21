@@ -189,7 +189,7 @@
         "id": "791180926065b631",
         "type": "config-log",
         "logname": "Logs",
-        "logdir": "/log",
+        "logdir": "/data/log",
         "stamp": "utc",
         "logstyle": "json",
         "logrotate": true,

@@ -3,7 +3,7 @@ version: "3.7"
 services:
   node-red-monitor:
     container_name: node-red-monitor
-    image: nodered/node-red:3.0.2
+    image: golfvert/wis2sensorcenterglobalcache:1.0.0
     environment:
       - TZ=Europe/Paris
       - REDIS_URL=redis://redis:6379
@@ -26,14 +26,13 @@ services:
       - DELAY4=
       - DELAY_ORIG= # when the message from the origin will be deleted from redis (mainly cleaning aspects). DELAY_ORIG must be > at DELAY4
     ports:
-      - "1800:1880"
+      - "1880:1880"
     networks:
       - sensor
     depends_on:
       - redis-monitor
     volumes:
-      - $HOME/WIS2GlobalCacheMonitoring/data:/data
-      - $HOME/WIS2GlobalCacheMonitoring/conf:/conf
+      - $HOME/WIS2GlobalCacheMonitoring/log:/data/log
   redis-monitor:
     container_name: redis-monitor
     image: redis:latest
